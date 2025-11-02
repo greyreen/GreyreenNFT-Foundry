@@ -15,25 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Foundry'yi Kurma Adımı (Forge & Cast)
-      - name: Install Foundry
+      # 1. Foundry'yi Kurma
+      - name: Install Foundry Toolchain
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: latest # En güncel stabil sürümü kullanalım
 
-      # 2. OpenZeppelin Kütüphanesini Kurma
-      - name: Install Dependencies (OpenZeppelin)
-        run: forge install openzeppelin/openzeppelin-contracts
+      # 2. Bağımlılıkları Kurma ve Güncelleme
+      - name: Install Dependencies
+        # OpenZeppelin'i kurar ve tüm alt modülleri günceller
+        run: forge update && forge install
 
-      # 3. YOL HARİTASI OLUŞTURMA (Önemli düzeltme)
-      - name: Create Remappings
-        run: |
-          echo "openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/" >> foundry.toml
-
-      # 4. Derleme (Bu sefer kesinlikle çalışmalı)
-      - name: Build Contracts
-        run: forge build
-
-      # 5. Testleri Çalıştırma
+      # 3. Build ve Test
+      # Forge test komutu, hem derleme hem de testi otomatik yapar
       - name: Run Tests
         run: forge test
