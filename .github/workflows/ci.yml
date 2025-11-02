@@ -1,0 +1,39 @@
+# .github/workflows/ci.yml
+
+name: Foundry NFT CI Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Foundry'yi Kurma Adımı (Forge & Cast)
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      # 2. OpenZeppelin Kütüphanesini Kurma
+      - name: Install Dependencies (OpenZeppelin)
+        run: forge install openzeppelin/openzeppelin-contracts
+
+      # 3. YOL HARİTASI OLUŞTURMA (Önemli düzeltme)
+      - name: Create Remappings
+        run: |
+          echo "openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/" >> foundry.toml
+
+      # 4. Derleme (Bu sefer kesinlikle çalışmalı)
+      - name: Build Contracts
+        run: forge build
+
+      # 5. Testleri Çalıştırma
+      - name: Run Tests
+        run: forge test
